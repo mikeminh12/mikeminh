@@ -4,61 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Giới thiệu - MikeMinh</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-    }
-    header {
-      background-color: #0077cc;
-      color: #fff;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      margin-left: 20px;
-      font-weight: bold;
-    }
-    nav a:hover {
-      text-decoration: underline;
-    }
-    main {
-      padding: 20px;
-    }
-    h1 {
-      margin-top: 0;
-    }
-    section.about {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 1px 3px 10px rgba(0,0,0,0.1);
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
     <div class="logo">MikeMinh</div>
     <nav>
       <a href="index.html">Trang chủ</a>
-      <a href="about.html">Giới thiệu</a>
       <a href="post.html">Bài đăng</a>
+      <a href="about.html">Giới thiệu</a>
     </nav>
+    <div id="user-actions">
+      <button id="loginBtn">Đăng nhập</button>
+      <button id="registerBtn">Đăng ký</button>
+    </div>
   </header>
 
   <main>
     <section class="about">
       <h1>Giới thiệu</h1>
-      <p>Chào mừng bạn đến với trang web của MikeMinh! Đây là nơi chúng tôi chia sẻ những bài viết, thông tin hữu ích, và những dự án thú vị mà MikeMinh thực hiện.</p>
-      <p>Trang web này được thiết kế để dễ dàng quản lý các bài đăng và hiển thị nội dung đẹp mắt, đồng bộ giữa các trang.</p>
-      <p>Bạn có thể truy cập mục <strong>Bài đăng</strong> để xem các bài viết chi tiết hoặc quay lại <strong>Trang chủ</strong> để khám phá thêm thông tin khác.</p>
+      <p>Chào mừng bạn đến với <b>MikeMinh</b> — nơi chia sẻ các bài đăng, ý tưởng, dự án và câu chuyện thú vị!</p>
+      <p>Website được phát triển bởi Mike Minh, với mục tiêu tạo không gian tự do cho cộng đồng chia sẻ và học hỏi.</p>
+      <p>Nếu bạn có tài khoản, hãy đăng nhập để bắt đầu đăng bài ngay nhé!</p>
     </section>
   </main>
+
+  <script type="module" src="auth.js"></script>
 </body>
 </html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng bài</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">MikeMinh</div>
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <a href="post.html">Bài đăng</a>
+      <a href="about.html">Giới thiệu</a>
+    </nav>
+    <div id="user-actions"></div>
+  </header>
+
+  <main>
+    <section>
+      <h1>Đăng bài mới</h1>
+      <form id="postForm">
+        <input type="text" id="title" placeholder="Tiêu đề" required><br>
+        <textarea id="description" placeholder="Mô tả ngắn..." required></textarea><br>
+        <textarea id="content" placeholder="Nội dung chi tiết..." required></textarea><br>
+        <button type="submit" class="modernbt">Đăng bài</button>
+      </form>
+    </section>
+  </main>
+
+  <script type="module">
+    import { db, auth } from "./firebase.js";
+    import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+    const form = document.getElementById("postForm");
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) currentUser = user;
+      else location.href = "login.html";
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value.trim();
+      const desc = document.getElementById("description").value.trim();
+      const content = document.getElementById("content").value.trim();
+
+      await addDoc(collection(db, "posts"), {
+        title,
+        description: desc,
+        content,
+        authorId: currentUser.uid,
+        authorName: currentUser.email || "Ẩn danh",
+        createdAt: serverTimestamp()
+      });
+      alert("Đăng bài thành công!");
+      location.href = "post.html";
+    });
+  </script>
+</body>
+</html>
