@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MikeMinh</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background-color: #0077cc;
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 20px;
+    }
+    section {
+      margin-bottom: 40px;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    /* Khung bài đăng giống post-detail */
+    section.post {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 1px 3px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    section.post h2 {
+      margin-bottom: 5px;
+    }
+    section.post small {
+      color: #555;
+    }
+    section.post a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #0077cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    section.post a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">MikeMinh</div>
+    <nav>
+      <a href="mikeminh.html">Trang chủ</a>
+      <a href="#about">Giới thiệu</a>
+      <a href="post.html">Bài đăng</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h1>Bài đăng</h1>
+      <div id="posts"></div>
+    </section>
+  </main>
+
+  <script>
+    const postsContainer = document.getElementById('posts');
+
+    fetch('posts.json')
+      .then(response => response.json())
+      .then(posts => {
+        posts.forEach(post => {
+          const postEl = document.createElement('section');
+          postEl.classList.add('post');
+          postEl.innerHTML = `
+            <h2>${post.title}</h2>
+            <small>${post.date}</small>
+            <p>${post.summary}</p>
+            <a href="post-detail.html?id=${post.id}">Xem chi tiết</a>
+          `;
+          postsContainer.appendChild(postEl);
+        });
+      })
+      .catch(error => {
+        console.error('Lỗi load bài đăng:', error);
+      });
+  </script>
+</body>
+</html>

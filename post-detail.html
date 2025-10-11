@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết bài đăng</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background-color: #0077cc;
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    main {
+      padding: 20px;
+    }
+    section {
+      margin-bottom: 40px;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    section.post-detail {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 1px 3px 10px rgba(0,0,0,0.1);
+    }
+    section.post-detail small {
+      color: #555;
+    }
+    a.back {
+      display: inline-block;
+      margin-top: 15px;
+      color: #0077cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a.back:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">MikeMinh</div>
+    <nav>
+      <a href="mikeminh.html">Trang chủ</a>
+      <a href="#about">Giới thiệu</a>
+      <a href="post.html">Bài đăng</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="post-detail" class="post-detail">
+      <!-- Nội dung bài đăng sẽ được load ở đây -->
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const postId = parseInt(params.get('id'));
+
+    fetch('posts.json')
+      .then(res => res.json())
+      .then(posts => {
+        const post = posts.find(p => p.id === postId);
+        const container = document.getElementById('post-detail');
+
+        if(post){
+          container.innerHTML = `
+            <h1>${post.title}</h1>
+            <small>${post.date}</small>
+            <p>${post.content}</p>
+            <a href="post.html" class="back">← Quay lại danh sách</a>
+          `;
+        } else {
+          container.innerHTML = '<p>Bài đăng không tồn tại!</p>';
+        }
+      });
+  </script>
+</body>
+</html>
