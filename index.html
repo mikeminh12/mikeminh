@@ -36,19 +36,23 @@
 
   <script type="module">
     import { auth, db } from "./firebase.js";
-    import { collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import { collection, getDocs, query, orderBy, limit, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const userActions = document.getElementById("user-actions");
     const loginBtn = document.getElementById("loginBtn");
     const registerBtn = document.getElementById("registerBtn");
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const username = userDoc.exists() ? userDoc.data().username : "User";
+
         userActions.innerHTML = `
-          <span>Xin chào, <b>${user.email}</b></span>
+          <span>Xin chào, <b>${username}</b></span>
           <button id="logoutBtn">Đăng xuất</button>
         `;
+
         document.getElementById("logoutBtn").onclick = async () => {
           await signOut(auth);
           location.reload();

@@ -42,7 +42,9 @@
 
   <script type="module">
     import { auth, db } from "./firebase.js";
-    import { doc, getDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import {
+      doc, getDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const userActions = document.getElementById("user-actions");
@@ -55,11 +57,19 @@
     const commentForm = document.getElementById("comment-form");
     const loginToComment = document.getElementById("login-to-comment");
 
+    let currentUser = null;
+    let currentUsername = null;
+
     // --- Hiển thị trạng thái đăng nhập ---
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
+        currentUser = user;
+        // Lấy username từ Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        currentUsername = userDoc.exists() ? userDoc.data().username : user.email.split("@")[0];
+
         userActions.innerHTML = `
-          <span>Xin chào, <b>${user.email}</b></span>
+          <span>Xin chào, <b>${currentUsername}</b></span>
           <button id="logoutBtn">Đăng xuất</button>
         `;
         document.getElementById("logoutBtn").onclick = async () => {
@@ -96,7 +106,7 @@
             <h2>${post.title}</h2>
             <p><i>${post.description || "Không có mô tả."}</i></p>
             <p>${post.content || "Không có nội dung."}</p>
-            <small>Người đăng: ${post.username || "Ẩn danh"} | Ngày: ${post.createdAt ? new Date(post.createdAt.toDate()).toLocaleString() : "Không rõ"}</small>
+            <small>Người đăng: ${post.authorName || "Ẩn danh"} | Ngày: ${post.createdAt ? new Date(post.createdAt.toDate()).toLocaleString() : "Không rõ"}</small>
           </div>
         `;
       } catch (err) {
@@ -141,7 +151,7 @@
         await addDoc(collection(db, "comments"), {
           postId,
           text,
-          username: user.email,
+          username: currentUsername || user.email.split("@")[0],
           createdAt: serverTimestamp()
         });
         commentInput.value = "";

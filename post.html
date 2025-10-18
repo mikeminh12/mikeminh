@@ -32,7 +32,7 @@
 
   <script type="module">
     import { auth, db } from "./firebase.js";
-    import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import { collection, getDocs, query, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const userActions = document.getElementById("user-actions");
@@ -40,24 +40,35 @@
     const registerBtn = document.getElementById("registerBtn");
     const newPostBtn = document.getElementById("newPostBtn");
 
-    onAuthStateChanged(auth, (user) => {
+    // --- Kiểm tra đăng nhập + hiện "Xin chào, username" ---
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        userActions.innerHTML = `
-          <span>Xin chào, <b>${user.email}</b></span>
-          <button id="logoutBtn">Đăng xuất</button>
-        `;
-        document.getElementById("logoutBtn").onclick = async () => {
-          await signOut(auth);
-          location.reload();
-        };
-        newPostBtn.style.display = "inline-block";
-        newPostBtn.onclick = () => location.href = "posting.html";
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          const username = userDoc.exists() ? userDoc.data().username : "Người dùng";
+
+          userActions.innerHTML = `
+            <span>Xin chào, <b>${username}</b></span>
+            <button id="logoutBtn">Đăng xuất</button>
+          `;
+
+          document.getElementById("logoutBtn").onclick = async () => {
+            await signOut(auth);
+            location.reload();
+          };
+
+          newPostBtn.style.display = "inline-block";
+          newPostBtn.onclick = () => location.href = "posting.html";
+        } catch (err) {
+          console.error("Lỗi lấy username:", err);
+        }
       } else {
         loginBtn.onclick = () => location.href = "login.html";
         registerBtn.onclick = () => location.href = "register.html";
       }
     });
 
+    // --- Load danh sách bài đăng ---
     async function loadPosts() {
       const postsContainer = document.getElementById("posts-container");
       postsContainer.innerHTML = "<p>Đang tải bài đăng...</p>";
@@ -72,16 +83,17 @@
           return;
         }
 
-        querySnapshot.forEach((doc) => {
-          const post = doc.data();
+        querySnapshot.forEach((docSnap) => {
+          const post = docSnap.data();
           const div = document.createElement("div");
           div.className = "post-card";
           div.innerHTML = `
             <h3>${post.title}</h3>
             <p>${post.description || "Không có mô tả."}</p>
-            <small>Người đăng: ${post.username || "Ẩn danh"} | Ngày: ${post.createdAt ? new Date(post.createdAt.toDate()).toLocaleString() : "Không rõ"}</small>
+            <small>Người đăng: ${post.authorName || "Ẩn danh"} | 
+            Ngày: ${post.createdAt ? new Date(post.createdAt.toDate()).toLocaleString() : "Không rõ"}</small>
             <br><br>
-            <button class="modernbt" onclick="location.href='post-detail.html?id=${doc.id}'">Xem chi tiết</button>
+            <button class="modernbt" onclick="location.href='post-detail.html?id=${docSnap.id}'">Xem chi tiết</button>
           `;
           postsContainer.appendChild(div);
         });

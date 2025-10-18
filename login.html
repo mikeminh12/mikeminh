@@ -9,7 +9,7 @@
 <body>
   <main style="max-width:400px;margin:50px auto;background:#fff;padding:20px;border-radius:12px;box-shadow:1px 3px 10px rgba(0,0,0,0.1);">
     <h2>Đăng nhập</h2>
-    <input id="email" type="email" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;">
+    <input id="username" type="text" placeholder="Tên người dùng" style="width:100%;padding:10px;margin-bottom:10px;">
     <input id="password" type="password" placeholder="Mật khẩu" style="width:100%;padding:10px;margin-bottom:10px;">
     <button id="loginBtn" style="width:100%;padding:10px;background:#0077cc;color:white;border:none;border-radius:8px;">Đăng nhập</button>
     <p style="margin-top:10px;">Chưa có tài khoản? <a href="register.html">Đăng ký</a></p>
@@ -20,13 +20,17 @@
     import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     
     document.getElementById("loginBtn").onclick = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      if (!username || !password) return alert("Nhập đủ username và mật khẩu nha!");
+
+      const fakeEmail = `${username}@mike.vn`;
+
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, fakeEmail, password);
         location.href = "index.html";
       } catch (err) {
-        alert("Sai tài khoản hoặc mật khẩu!");
+        alert("Sai username hoặc mật khẩu!");
       }
     };
   </script>

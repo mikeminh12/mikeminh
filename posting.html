@@ -31,33 +31,59 @@
 
   <script type="module">
     import { db, auth } from "./firebase.js";
-    import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import { addDoc, collection, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const form = document.getElementById("postForm");
     let currentUser = null;
+    let currentUsername = null;
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) currentUser = user;
-      else location.href = "login.html";
+    // Kiểm tra đăng nhập
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+
+      // Lấy username từ Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        currentUsername = userDoc.data().username;
+      } else {
+        currentUsername = "Ẩn danh";
+      }
     });
 
+    // Xử lý đăng bài
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      if (!currentUser) {
+        alert("Vui lòng đăng nhập để đăng bài!");
+        return;
+      }
+
       const title = document.getElementById("title").value.trim();
       const desc = document.getElementById("description").value.trim();
       const content = document.getElementById("content").value.trim();
 
-      await addDoc(collection(db, "posts"), {
-        title,
-        description: desc,
-        content,
-        authorId: currentUser.uid,
-        authorName: currentUser.email || "Ẩn danh",
-        createdAt: serverTimestamp()
-      });
-      alert("Đăng bài thành công!");
-      location.href = "post.html";
+      try {
+        await addDoc(collection(db, "posts"), {
+          title,
+          description: desc,
+          content,
+          authorId: currentUser.uid,
+          authorName: currentUsername || "Ẩn danh",
+          createdAt: serverTimestamp()
+        });
+
+        alert("Đăng bài thành công!");
+        location.href = "post.html";
+      } catch (err) {
+        alert("Lỗi khi đăng bài: " + err.message);
+        console.error(err);
+      }
     });
   </script>
 </body>
